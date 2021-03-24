@@ -98,5 +98,4 @@ if __name__ == '__main__':
     cc = news_crawler()
     cc.get_total_news_content()
     cc._store_to_db()
-    pdb.set_trace()
 
