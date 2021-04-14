@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 import time
-total_request_page_number = 100
+total_request_page_number = 10
 
 class news_crawler(object):
 
