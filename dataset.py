@@ -19,32 +19,23 @@ class news_dataset(Dataset):
         db = NewsDatabase(company)
         data = db.get_data_by_sorted_date()
         self.date, self.text = data.date.tolist(), data.content.tolist()
-        self.date = [chi_to_eng(s) for s in self.date]
+        self.date = np.array([chi_to_eng(s) for s in self.date])
         self.stock_price = stock_crawler(
             start_time=self.date[0], end_time=self.date[-1]).get_value()
 
-        self.index =
-        self.input_ids = self.__tokenization(self.text)
+        self.index = np.unique(self.date)
+        # self.input_ids = self.__tokenization(self.text)
 
-    def __len__(self):
-    return len(self.landmarks_frame)
+    def __len__(self): 
+        return len(self.index) - 1	
 
     def __getitem__(self, idx):
-    if torch.is_tensor(idx):
-        idx = idx.tolist()
+        i_date = self.index[idx]
+        news = __tokenization(self.text[self.date == i_date])
+        current_price = self.stock_price.iloc[idx].values
+        future_price = self.stock_price.iloc[idx + 1].values
+        return news, current_price, future_price 
 
-    img_name = os.path.join(self.root_dir,
-                            self.landmarks_frame.iloc[idx, 0])
-    image = io.imread(img_name)
-    landmarks = self.landmarks_frame.iloc[idx, 1:]
-    landmarks = np.array([landmarks])
-    landmarks = landmarks.astype('float').reshape(-1, 2)
-    sample = {'image': image, 'landmarks': landmarks}
-
-    if self.transform:
-        sample = self.transform(sample)
-
-    return sample
 
     def __tokenization(self, text):
         pt_batch = self.tokenizer(
